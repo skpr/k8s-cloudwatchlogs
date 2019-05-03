@@ -16,7 +16,8 @@ func Extract(file os.FileInfo) (string, string, string, error) {
 	name := strings.Replace(file.Name(), ".log", "", 1)
 
 	// Split the string down so we can return their metadata.
-	sl := strings.Split(name, "_")
+	underscore := strings.Split(name, "_")
+	dash := strings.Split(underscore[2], "-")
 
-	return sl[1], sl[0], sl[2], nil
+	return underscore[1], underscore[0], dash[0], nil
 }
