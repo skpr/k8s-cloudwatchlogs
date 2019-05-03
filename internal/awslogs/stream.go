@@ -28,6 +28,7 @@ const (
 	ConfigStream = "awslogs-stream"
 )
 
+// StreamParams passed into the Stream function.
 type StreamParams struct {
 	Region      string
 	Directory   string

@@ -1,4 +1,4 @@
-module github.com/previousnext/k8s-aws-cloudwatchlogs
+module github.com/skpr/k8s-cloudwatchlogs
 
 go 1.12
 
