@@ -1,0 +1,41 @@
+apiVersion: extensions/v1beta1
+kind: DaemonSet
+metadata:
+  name: aws-cloudwatchlogs
+  namespace: kube-system
+spec:
+  template:
+    metadata:
+      labels:
+        app: aws-cloudwatchlogs
+    spec:
+      containers:
+      - name: k8s-cloudwatchlogs
+        image: skpr/k8s-cloudwatchlogs:latest
+        env:
+        - name: AWS_ACCESS_KEY_ID
+          value: "xxxxxxxxxx"
+        - name: AWS_SECRET_ACCESS_KEY
+          value: "xxxxxxxxxx"
+        - name: REGION
+          value: "ap-southeast-2"
+        resources:
+          limits:
+            cpu: 50m
+            memory: 128Mi
+          requests:
+            cpu: 50m
+            memory: 128Mi
+        volumeMounts:
+        - name: varlog
+          mountPath: /var/log
+        - name: varlibdockercontainers
+          mountPath: /var/lib/docker/containers
+          readOnly: true
+      volumes:
+      - name: varlog
+        hostPath:
+          path: /var/log
+      - name: varlibdockercontainers
+        hostPath:
+          path: /var/lib/docker/containers

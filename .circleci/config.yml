@@ -1,0 +1,11 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: golang:1.12
+    working_directory: /go/src/github.com/skpr/k8s-cloudwatchlogs
+    steps:
+      - checkout
+      - run: go get -u golang.org/x/lint/golint
+      - run: make lint
+      - run: make test
