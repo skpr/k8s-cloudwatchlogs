@@ -15,10 +15,10 @@ import (
 )
 
 var (
-	cliPrometheus = kingpin.Flag("prometheus", "Endpoint which Prometheus metrics can be scraped.").Default(":8080").String()
-	cliRegion     = kingpin.Flag("region", "Region which logs will be stored.").Default("ap-southeast-2").String()
-	cliIgnore     = kingpin.Flag("ingore", "Ignore lines by using regex.").Default("liveness|healthz").String()
-	cliDirectory  = kingpin.Arg("directory", "Directory which contains Kubernetes Pod logs.").Required().String()
+	cliPrometheus = kingpin.Flag("prometheus", "Endpoint which Prometheus metrics can be scraped.").Envar("K8S_CLOUDWATCHLOGS_PROMETHEUS_PORT").Default(":9000").String()
+	cliRegion     = kingpin.Flag("region", "Region which logs will be stored.").Envar("AWS_REGION").Default("ap-southeast-2").String()
+	cliIgnore     = kingpin.Flag("ingore", "Ignore lines by using regex.").Envar("K8S_CLOUDWATCHLOGS_IGNORE").Default("liveness|healthz").String()
+	cliDirectory  = kingpin.Flag("directory", "Directory which contains Kubernetes Pod logs.").Envar("K8S_CLOUDWATCHLOGS_DIRECTORY").Default("/var/log/containers").String()
 )
 
 func main() {
