@@ -27,6 +27,7 @@ require (
 	github.com/prometheus/common v0.3.0
 	github.com/radovskyb/watcher v1.0.6
 	github.com/sirupsen/logrus v1.4.1 // indirect
+	github.com/stretchr/testify v1.3.0
 	golang.org/x/sys v0.0.0-20190502175342-a43fa875dd82 // indirect
 	golang.org/x/time v0.0.0-20190308202827-9d24e82272b4 // indirect
 	google.golang.org/grpc v1.20.1 // indirect
