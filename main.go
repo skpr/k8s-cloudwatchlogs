@@ -3,6 +3,7 @@ package main
 import (
 	"net"
 	"net/http"
+	"net/http/pprof"
 	"os"
 
 	"github.com/heptio/workgroup"
@@ -19,6 +20,7 @@ var (
 	cliRegion     = kingpin.Flag("region", "Region which logs will be stored.").Envar("AWS_REGION").Default("ap-southeast-2").String()
 	cliIgnore     = kingpin.Flag("ingore", "Ignore lines by using regex.").Envar("K8S_CLOUDWATCHLOGS_IGNORE").Default("liveness|healthz").String()
 	cliDirectory  = kingpin.Flag("directory", "Directory which contains Kubernetes Pod logs.").Envar("K8S_CLOUDWATCHLOGS_DIRECTORY").Default("/var/log/containers").String()
+	cliDebug      = kingpin.Flag("debug", "Turn on pprof debugging").Envar("K8S_CLOUDWATCHLOGS_DEBUG").Bool()
 )
 
 func main() {
@@ -42,7 +44,16 @@ func metrics(stop <-chan struct{}) error {
 	log.Infoln("Starting Prometheus metrics server")
 
 	mux := http.NewServeMux()
+
 	mux.Handle("/metrics", promhttp.Handler())
+
+	if *cliDebug {
+		mux.HandleFunc("/debug/pprof/", pprof.Index)
+		mux.HandleFunc("/debug/pprof/cmdline", pprof.Cmdline)
+		mux.HandleFunc("/debug/pprof/profile", pprof.Profile)
+		mux.HandleFunc("/debug/pprof/symbol", pprof.Symbol)
+		mux.HandleFunc("/debug/pprof/trace", pprof.Trace)
+	}
 
 	l, err := net.Listen("tcp", *cliPrometheus)
 	if err != nil {
