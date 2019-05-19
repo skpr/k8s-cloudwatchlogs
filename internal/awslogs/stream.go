@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/docker/docker/daemon/logger"
-	"github.com/hpcloud/tail"
+	"github.com/heptio/workgroup"
 	"github.com/moby/moby/daemon/logger/awslogs"
 	"github.com/prometheus/common/log"
 
@@ -62,55 +62,77 @@ func Stream(params StreamParams) error {
 	}
 	defer cw.Close()
 
-	filelogger.Infoln("Starting file watcher")
+	path := filepath.Join(params.Directory, params.File.Name())
 
-	watcher, err := fileutils.Tail(filepath.Join(params.Directory, params.File.Name()), params.New)
-	if err != nil {
-		return fmt.Errorf("failed to start tail: %s", err)
-	}
+	var wg workgroup.Group
 
 	// We also want to monitor to make sure that the file still exists.
-	go func(watcher *tail.Tail) {
-		limiter := time.Tick(time.Second * 15)
+	wg.Add(func(stop <-chan struct{}) error {
+		filelogger.Infoln("Starting file watcher")
+
+		ticker := time.NewTicker(time.Second * 15)
+		defer ticker.Stop()
 
 		for {
-			<-limiter
-
-			if _, err := os.Stat(watcher.Filename); os.IsNotExist(err) {
-				watcher.Stop()
-				return
+			select {
+			case <-ticker.C:
+				if _, err := os.Stat(path); os.IsNotExist(err) {
+					filelogger.Infoln("File has been deleted from filesystem")
+					return nil
+				}
+			case <-stop:
+				return nil
 			}
 		}
-	}(watcher)
+	})
 
-	filelogger.Infoln("Starting to stream")
+	wg.Add(func(stop <-chan struct{}) error {
+		filelogger.Infoln("Starting file tailer")
 
-	re := regexp.MustCompile(params.SkipPattern)
+		regex := regexp.MustCompile(params.SkipPattern)
 
-	for {
-		line, more := <-watcher.Lines
-		if !more {
-			break
-		}
-
-		var message Message
-
-		err := json.Unmarshal([]byte(line.Text), &message)
+		watcher, err := fileutils.Tail(path, params.New)
 		if err != nil {
-			return fmt.Errorf("failed to unmarshal line for %s/%s/%s: %s", namespace, pod, container, err)
+			return fmt.Errorf("failed to start tail: %s", err)
 		}
 
-		if re.MatchString(message.Log) {
-			continue
+		go func() {
+			<-stop
+			watcher.Stop()
+		}()
+
+		for {
+			line, more := <-watcher.Lines
+			if !more {
+				break
+			}
+
+			var message Message
+
+			err = json.Unmarshal([]byte(line.Text), &message)
+			if err != nil {
+				return fmt.Errorf("failed to unmarshal line for %s/%s/%s: %s", namespace, pod, container, err)
+			}
+
+			if regex.MatchString(message.Log) {
+				continue
+			}
+
+			err = cw.Log(&logger.Message{
+				Line:      []byte(message.Log),
+				Timestamp: message.Time,
+			})
+			if err != nil {
+				return fmt.Errorf("failed to push log: %s", err)
+			}
 		}
 
-		err = cw.Log(&logger.Message{
-			Line:      []byte(message.Log),
-			Timestamp: message.Time,
-		})
-		if err != nil {
-			return fmt.Errorf("failed to push log: %s", err)
-		}
+		return nil
+	})
+
+	err = wg.Run()
+	if err != nil {
+		return err
 	}
 
 	filelogger.Infoln("Finished streaming")
