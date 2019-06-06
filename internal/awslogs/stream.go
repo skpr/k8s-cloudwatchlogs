@@ -32,6 +32,7 @@ const (
 type StreamParams struct {
 	Region      string
 	Directory   string
+	Prefix      string
 	SkipPattern string
 	File        os.FileInfo
 	New         bool
@@ -53,7 +54,7 @@ func Stream(params StreamParams) error {
 		Config: map[string]string{
 			ConfigRegion:      params.Region,
 			ConfigCreateGroup: "true",
-			ConfigGroup:       namespace,
+			ConfigGroup:       getGroupName(params.Prefix, namespace),
 			ConfigStream:      fmt.Sprintf("%s-%s", pod, container),
 		},
 	})
@@ -138,4 +139,13 @@ func Stream(params StreamParams) error {
 	filelogger.Infoln("Finished streaming")
 
 	return nil
+}
+
+// Helper function to apply a prefix to a group name if it exists.
+func getGroupName(prefix, name string) string {
+	if prefix != "" {
+		return fmt.Sprintf("%s-%s", prefix, name)
+	}
+
+	return name
 }
