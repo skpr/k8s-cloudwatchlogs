@@ -16,6 +16,7 @@ import (
 )
 
 var (
+	cliPrefix     = kingpin.Flag("prefix", "Prefix to apply to CloudWatch Logs group names.").Envar("K8S_CLOUDWATCHLOGS_PREFIX").String()
 	cliPrometheus = kingpin.Flag("prometheus", "Endpoint which Prometheus metrics can be scraped.").Envar("K8S_CLOUDWATCHLOGS_PROMETHEUS_PORT").Default(":9000").String()
 	cliRegion     = kingpin.Flag("region", "Region which logs will be stored.").Envar("AWS_REGION").Default("ap-southeast-2").String()
 	cliIgnore     = kingpin.Flag("ingore", "Ignore lines by using regex.").Envar("K8S_CLOUDWATCHLOGS_IGNORE").Default("liveness|healthz").String()
@@ -84,6 +85,7 @@ func watcher(stop <-chan struct{}) error {
 			params := awslogs.StreamParams{
 				Region:      *cliRegion,
 				Directory:   *cliDirectory,
+				Prefix:      *cliPrefix,
 				SkipPattern: *cliIgnore,
 				File:        file,
 				New:         false,
@@ -115,6 +117,7 @@ func watcher(stop <-chan struct{}) error {
 			params := awslogs.StreamParams{
 				Region:      *cliRegion,
 				Directory:   *cliDirectory,
+				Prefix:      *cliPrefix,
 				SkipPattern: *cliIgnore,
 				File:        file,
 				New:         true,
