@@ -2,7 +2,7 @@ module github.com/skpr/k8s-cloudwatchlogs
 
 go 1.12
 
-require github.com/previousnext/go-cloudwatchlogs v0.0.2-0.20190814020346-021ee38d12c0
+require github.com/previousnext/go-cloudwatchlogs v0.0.2-0.20190814033354-9a4a0a14e6da
 
 require (
 	github.com/Azure/go-ansiterm v0.0.0-20170929234023-d6e3b3328b78 // indirect
