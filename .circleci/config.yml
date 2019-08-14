@@ -4,8 +4,11 @@ jobs:
     docker:
       - image: golang:1.12
     working_directory: /go/src/github.com/skpr/k8s-cloudwatchlogs
+    environment:
+      - GO111MODULE=on
     steps:
       - checkout
       - run: go get -u golang.org/x/lint/golint
+      - run: go get
       - run: make lint
       - run: make test

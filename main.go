@@ -11,8 +11,8 @@ import (
 	"github.com/prometheus/common/log"
 	kingpin "gopkg.in/alecthomas/kingpin.v2"
 
-	"github.com/skpr/k8s-cloudwatchlogs/internal/awslogs"
-	"github.com/skpr/k8s-cloudwatchlogs/internal/fileutils"
+	awslogs "github.com/previousnext/go-cloudwatchlogs"
+	"github.com/previousnext/go-cloudwatchlogs/pkg/fileutils"
 )
 
 var (
