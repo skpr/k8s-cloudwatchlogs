@@ -17,7 +17,6 @@ import (
 	"github.com/previousnext/go-cloudwatchlogs/pkg/metadata"
 )
 
-
 // Stream the contents of a file to CloudWatch Logs.
 func Stream(params StreamParams) error {
 	namespace, pod, container, err := metadata.Extract(params.File)
@@ -30,7 +29,7 @@ func Stream(params StreamParams) error {
 	filelogger.Infoln("Starting CloudWatch Logs client")
 
 	// We load the stream backend so we can push these logs to the channel.
-	cw, err := awslogs.New(logger.Context{
+	cw, err := awslogs.New(logger.Info{
 		Config: map[string]string{
 			"ConfigRegion":      params.Region,
 			"ConfigCreateGroup": "true",

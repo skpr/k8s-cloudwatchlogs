@@ -15,11 +15,11 @@ require (
 	github.com/docker/go-metrics v0.0.0-20181218153428-b84716841b82 // indirect
 	github.com/docker/go-units v0.4.0 // indirect
 	github.com/fsnotify/fsnotify v1.4.7 // indirect
-	github.com/gobwas/glob v0.2.3
+	github.com/gobwas/glob v0.2.3 // indirect
 	github.com/gogo/protobuf v1.2.1 // indirect
 	github.com/google/go-cmp v0.3.1 // indirect
 	github.com/heptio/workgroup v0.8.0-beta.1
-	github.com/hpcloud/tail v1.0.0
+	github.com/hpcloud/tail v1.0.0 // indirect
 	github.com/mattn/go-shellwords v1.0.5 // indirect
 	github.com/moby/moby v0.7.3-0.20190501022228-e516af6e5636 // indirect
 	github.com/morikuni/aec v0.0.0-20170113033406-39771216ff4c // indirect
@@ -28,9 +28,9 @@ require (
 	github.com/pkg/errors v0.8.1 // indirect
 	github.com/prometheus/client_golang v0.9.2
 	github.com/prometheus/common v0.3.0
-	github.com/radovskyb/watcher v1.0.6
+	github.com/radovskyb/watcher v1.0.6 // indirect
 	github.com/sirupsen/logrus v1.4.1 // indirect
-	github.com/stretchr/testify v1.3.0
+	github.com/stretchr/testify v1.3.0 // indirect
 	golang.org/x/sys v0.0.0-20190502175342-a43fa875dd82 // indirect
 	golang.org/x/time v0.0.0-20190308202827-9d24e82272b4 // indirect
 	google.golang.org/grpc v1.20.1 // indirect
